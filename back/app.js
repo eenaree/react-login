@@ -1,4 +1,5 @@
 const express = require('express');
+const cookieParser = require('cookie-parser');
 const { sequelize } = require('./models');
 const userRouter = require('./routes/users');
 
@@ -18,6 +19,10 @@ app.set('port', process.env.PORT || 8080);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser(process.env.COOKIE_SECRET, {
+  httpOnly: true,
+  secure: false,
+}));
 
 app.get('/', (req, res) => {});
 

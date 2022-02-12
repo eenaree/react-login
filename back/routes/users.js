@@ -1,6 +1,19 @@
 const router = require('express').Router();
 const { User } = require('../models');
 
+router.route('/')
+  .get(async (req, res) => {
+    try {
+      const user = await User.findOne({ where: { email: req.cookies.user }});
+      const { id, email, nickname } = user;
+      if (user) {
+        res.json({ data: { id, email, nickname } });
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  });
+
 router.route('/login')
   .post(async (req, res) => {
     try {
@@ -15,6 +28,7 @@ router.route('/login')
       }
 
       const { id, email, nickname } = user;
+      res.cookie('user', email, { MaxAge: 3600 });
       res.json({
         message: '로그인 성공',
         data: { id, email, nickname },
@@ -41,10 +55,21 @@ router.route('/signup')
       await newUser.save();
 
       const { id, email, nickname } = newUser;
+      res.cookie('user', email);
       res.json({
         message: '회원가입 성공',
         data: { id, email, nickname },
       });
+    } catch (error) {
+      console.error(error);
+    }
+  });
+
+router.route('/logout')
+  .get(async (req, res) => {
+    try {
+      res.clearCookie('user');
+      res.status(204).json({ message: '로그아웃 성공' });
     } catch (error) {
       console.error(error);
     }

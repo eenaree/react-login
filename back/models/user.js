@@ -1,4 +1,5 @@
 const { DataTypes, Model } = require('sequelize');
+const bcrypt = require('bcrypt');
 
 class User extends Model {
   static init(sequelize) {
@@ -27,6 +28,14 @@ class User extends Model {
         timestamps: true,
       }
     );
+  }
+
+  async getHashedPassword(password) {
+    return await bcrypt.hash(password, 10);
+  }
+
+  async getComparePasswordResult(password) {
+    return await bcrypt.compare(password, this.password);
   }
 }
 

@@ -1,5 +1,6 @@
 const express = require('express');
 const { sequelize } = require('./models');
+const userRouter = require('./routes/users');
 
 const app = express();
 
@@ -15,7 +16,12 @@ app.set('port', process.env.PORT || 8080);
   }
 })();
 
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 app.get('/', (req, res) => {});
+
+app.use('/api/users', userRouter);
 
 app.use((err, req, res, next) => {
   console.log(err.stack);

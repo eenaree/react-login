@@ -1,9 +1,25 @@
 const express = require('express');
-const cookieParser = require('cookie-parser');
+const session = require('express-session');
+const cors = require('cors');
 const { sequelize } = require('./models');
 const userRouter = require('./routes/users');
 
 const app = express();
+
+const sessionOptions = {
+  resave: false,
+  saveUninitialized: true,
+  secret: process.env.SESSION_SECRET,
+  cookie: {
+    httpOnly: true,
+    secure: false,
+  },
+};
+
+const corsOptions = {
+  origin: 'http://localhost:3000',
+  credentials: true,
+};
 
 app.set('port', process.env.PORT || 8080);
 
@@ -17,12 +33,10 @@ app.set('port', process.env.PORT || 8080);
   }
 })();
 
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser(process.env.COOKIE_SECRET, {
-  httpOnly: true,
-  secure: false,
-}));
+app.use(session(sessionOptions));
 
 app.get('/', (req, res) => {});
 

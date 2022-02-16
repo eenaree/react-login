@@ -1,26 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import usersAPI from './api/users';
 
 const App = () => {
-  const [loggedUser, setLoggedUser] = useState('');
-
-  useEffect(() => {
-    async function fetchUser() {
-      try {
-        const { data } = await usersAPI.getUser();
-        console.log(data?.user);
-        setLoggedUser(data?.user.nickname);
-      } catch (error) {
-        console.error(error);
-      }
-    }
-    fetchUser();
-  }, []);
+  const user = JSON.parse(sessionStorage.getItem('user'))?.nickname;
+  const [loggedUser, setLoggedUser] = useState(user || '');
 
   async function logoutUser() {
     try {
       await usersAPI.logout();
+      sessionStorage.removeItem('user');
       setLoggedUser('');
     } catch (error) {
       console.error(error);

@@ -1,21 +1,33 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import usersAPI from '../api/users';
+import useInput from '../hooks/useInput';
 
 const Login = () => {
   const navigate = useNavigate();
-  const [userInfo, setUserInfo] = useState({ email: '', password: '' });
+  const initialUserInfo = { email: '', password: '' };
+  const [userInfo, onChangeUserInfo] = useInput(initialUserInfo);
   const [errorMessage, setErrorMessage] = useState('');
-  const onChangeUserInfo = e => {
-    setUserInfo({
-      ...userInfo,
-      [e.target.name]: e.target.value,
-    });
-  };
+  const inputRef = useRef([]);
+
+  function setEmailInputRef(element) {
+    inputRef.current[0] = element;
+  }
+
+  function setPasswordInputRef(element) {
+    inputRef.current[1] = element;
+  }
 
   async function loginUser() {
+    for (let i = 0; i < inputRef.current.length; i++) {
+      if (!inputRef.current[i].value) {
+        inputRef.current[i].focus();
+        return setErrorMessage('필수 입력 항목이 비어있습니다.');
+      }
+    }
     try {
-      await usersAPI.login(userInfo);
+      const { data } = await usersAPI.login(userInfo);
+      sessionStorage.setItem('user', JSON.stringify(data.user));
       navigate('/');
     } catch (error) {
       if (error.response) {
@@ -41,6 +53,7 @@ const Login = () => {
             name="email"
             value={userInfo.email}
             onChange={onChangeUserInfo}
+            ref={setEmailInputRef}
           />
         </p>
         <p>
@@ -51,6 +64,7 @@ const Login = () => {
             name="password"
             value={userInfo.password}
             onChange={onChangeUserInfo}
+            ref={setPasswordInputRef}
           />
         </p>
         <p>

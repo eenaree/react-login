@@ -1,7 +1,9 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { css } from '@emotion/react';
 import usersAPI from '../api/users';
 import useInput from '../hooks/useInput';
+import ErrorMessage from './ErrorMessage';
 
 const SignUp = () => {
   const navigate = useNavigate();
@@ -45,8 +47,20 @@ const SignUp = () => {
     signupUser();
   };
 
+  useEffect(() => {
+    if (userInfo.email && userInfo.password && userInfo.nickname) {
+      setErrorMessage('');
+    }
+  }, [userInfo]);
+
   return (
-    <>
+    <div
+      css={css`
+        width: 500px;
+        border: 1px solid #000;
+        text-align: center;
+      `}
+    >
       <h1>회원가입</h1>
       <form onSubmit={onSubmitForm}>
         <p>
@@ -86,9 +100,9 @@ const SignUp = () => {
           <button>회원가입</button>
           <Link to="/">홈으로</Link>
         </p>
-        <p>{errorMessage}</p>
+        <ErrorMessage message={errorMessage} />
       </form>
-    </>
+    </div>
   );
 };
 

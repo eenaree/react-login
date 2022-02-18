@@ -85,16 +85,11 @@ module.exports = {
   devServer: {
     hot: true,
     port: 3000,
-    devMiddleware: {
-      publicPath: "/",
-    },
     static: {
       directory: path.join(__dirname, "public"),
       publicPath: "/public",
     },
-    historyApiFallback: {
-      index: "./src/index.html",
-    },
+    historyApiFallback: true,
     compress: true,
   },
 };
